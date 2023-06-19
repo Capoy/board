@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+  
+ <mapper namespace="com.capoy.mapper.MemberMapper">
+ 
+ 	<resultMap type="com.capoy.domain.MemberVO" id="memberMap">
+ 		<id property="userid" column="userid" />
+ 		<result property="userid" column="userid" />
+ 		<result property="userpw" column="userpw" />
+ 		<result property="userName" column="username" />
+ 		<result property="regDate" column="regdate" />
+ 		<result property="updateDate" column="updatedate" />
+ 		<collection property="authList" resultMap="authMap"></collection>
+ 	</resultMap>
+ 	
+ 	<resultMap type="com.capoy.domain.AuthVO" id="authMap">
+ 		<result property="userid" column="userid" />
+ 		<result property="auth" column="auth" /> 		
+ 	</resultMap>
+ 	
+ 	<select id="read" resultMap="memberMap">
+ 		SELECT
+ 			mem.userid, userpw, username, enabled, regdate, updatedate, auth
+ 		FROM
+ 			tbl_member mem LEFT OUTER JOIN tbl_member_auth auth ON mem.userid = auth.userid
+ 		WHERE mem.userid =  #{userid}
+ 	</select>
+ 	
+ 	<select id="checkByUserId" resultType="String">
+ 		SELECT
+ 			NVL(MIN('Y'), 'N') AS CHK
+ 		FROM
+ 			DUAL
+ 		WHERE EXISTS (
+ 			SELECT 1 
+ 			FROM
+ 				tbl_member
+ 			WHERE 
+ 				userid = #{userid}
+ 		)
+ 	</select>
+ 	
+ 	<insert id="insert">
+ 		INSERT INTO tbl_member (userid, userpw, username) 
+ 		VALUES (#{userid}, #{userpw}, #{userName})
+ 	</insert>
+ 	
+ 	<insert id="insertAuth">
+ 		INSERT INTO tbl_member_auth (userid, auth) 
+ 		VALUES (#{userid}, #{auth})
+ 	</insert>
+ 	
+ </mapper>
